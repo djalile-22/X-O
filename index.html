@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f0f0f0; margin: 0; padding: 30px; }
+    h1 { margin-bottom: 20px; }
+    #game { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center; margin: 0 auto; }
+    .cell { width: 100px; height: 100px; background: white; border: 2px solid #333; font-size: 2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 10px; }
+    .cell.taken { pointer-events: none; opacity: 0.7; }
+    #message { margin-top: 20px; font-size: 1.2rem; }
+    button { margin-top: 20px; padding: 10px 20px; cursor: pointer; border: 1px solid #333; border-radius: 8px; background: white; }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe Game</h1>
+  <div id="game"></div>
+  <p id="message"></p>
+  <button onclick="resetGame()">Restart</button>
+
+  <script>
+    const game = document.getElementById('game');
+    const message = document.getElementById('message');
+    let board = Array(9).fill('');
+    let currentPlayer = 'X';
+
+    function createBoard() {
+      game.innerHTML = '';
+      board.forEach((cell, i) => {
+        const div = document.createElement('div');
+        div.className = 'cell' + (cell ? ' taken' : '');
+        div.textContent = cell;
+        div.addEventListener('click', () => makeMove(i));
+        game.appendChild(div);
+      });
+      message.textContent = `Player ${currentPlayer}'s turn`;
+    }
+
+    function makeMove(i) {
+      if (!board[i]) {
+        board[i] = currentPlayer;
+        const winner = checkWinner();
+        if (winner) {
+          endGame(winner);
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          createBoard();
+        }
+      }
+    }
+
+    function checkWinner() {
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (const [a,b,c] of wins) {
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+      }
+      if (!board.includes('')) return 'Draw';
+      return null;
+    }
+
+    function endGame(winner) {
+      createBoard();
+      message.textContent = winner === 'Draw' ? "It's a Draw!" : `🎉 Player ${winner} Wins!`;
+      document.querySelectorAll('.cell').forEach(c => c.classList.add('taken'));
+    }
+
+    function resetGame() {
+      board = Array(9).fill('');
+      currentPlayer = 'X';
+      message.textContent = '';
+      createBoard();
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
